@@ -147,10 +147,14 @@ Queue.isNowTransaction = function(q, dbQuery) {
 		if(this.queue.length > 0)
 		{
 			this._autoCommit = true;
+			this._autoCommitCallback = cb;
 			this.resume();
 		}
 		else
 		{
+			// if client manually called commit() and supplied a callback then use that
+			if (undefined !== this._autoCommitCallback)
+				cb = this._autoCommitCallback;
 			delete this.commit;
 			delete this._autoCommit;
 			this.query("COMMIT", cb).resume();
